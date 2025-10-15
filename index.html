@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Favicon Pokémon -->
+<link rel="icon" href="favicon.png" type="image/png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex Shiny Z-A</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>✨ Pokédex Shiny Z-A</h1>
+  </header>
+
+  <main>
+  <div id="add-pokemon">
+    <input type="text" id="pokemon-name" placeholder="Nom ou ID du Pokémon">
+
+    <!-- Remplace le champ texte par un select -->
+    <select id="trainer-name" required>
+  <option value="">dresseur</option>
+  <option value="Kirb">Kirb</option>
+  <option value="Plosion">Plosion</option>
+  <option value="Natzor">Natzor</option>
+</select>
+
+<input type="datetime-local" id="capture-time">
+
+
+    <button id="add-btn">Ajouter Pokémon</button>
+  </div>
+
+ <div id="trainer-stats" style="margin-bottom: 1.5em;">
+    <span id="kirb-name" style="cursor:pointer; color:#0055ff;">Kirb</span> : <span id="kirb-count">0</span> |
+    <span id="plosion-name" style="cursor:pointer; color:#11cf00;">Plosion</span> : <span id="plosion-count">0</span> |
+    <span id="natzor-name" style="cursor:pointer; color:#cd0000;">Natzor</span> : <span id="natzor-count">0</span>
+  </div>
+
+
+  <div id="pokedex"></div>
+
+  <!-- === Sélecteur visuel de formes === -->
+<div id="form-selector" class="hidden">
+  <div id="form-selector-content">
+    <h3>Choisis une forme ✨</h3>
+    <div id="form-options"></div>
+    <button id="cancel-form">Annuler</button>
+  </div>
+</div>
+
+<style>
+  /* === Overlay === */
+  #form-selector {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeInBg 0.4s ease forwards;
+  }
+
+  #form-selector.hidden {
+    display: none;
+  }
+
+  /* === Fenêtre principale === */
+  #form-selector-content {
+    background: radial-gradient(circle at top, #222 0%, #111 100%);
+    border-radius: 1em;
+    padding: 1.8em;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+    max-width: 90%;
+    transform: scale(0.8);
+    opacity: 0;
+    animation: popIn 0.35s ease forwards;
+  }
+
+  /* === Titre === */
+  #form-selector-content h2 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-bottom: 1em;
+    letter-spacing: 1px;
+    color: #ffd54a;
+    text-shadow: 0 0 10px rgba(255, 230, 150, 0.6);
+  }
+
+  /* === Options === */
+  #form-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5em;
+    margin-top: 1em;
+  }
+
+  .form-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+  }
+
+  .form-option img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background: #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+
+  .form-option:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 25px gold;
+    filter: brightness(1.2);
+  }
+
+  .form-name {
+    margin-top: 0.4em;
+    font-size: 0.9em;
+    color: #eee;
+    text-transform: capitalize;
+  }
+
+  /* === Bouton annuler === */
+  #cancel-form {
+    margin-top: 1.5em;
+    background: #444;
+    border: none;
+    padding: 0.6em 1.2em;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  #cancel-form:hover {
+    background: #666;
+  }
+
+  /* === Animations === */
+  @keyframes fadeInBg {
+    from {
+      background: rgba(0, 0, 0, 0);
+    }
+    to {
+      background: rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  @keyframes popIn {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+      box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    }
+    60% {
+      transform: scale(1.05);
+      opacity: 1;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+    }
+  }
+</style>
+
+
+
+
+
+</main>
+
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+/* === THEME SOMBRE HARMONISÉ === */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at top, #0f1113, #0b0b0b);
+  color: #e6e6e6;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+header {
+  background: linear-gradient(90deg, #ad0202, #002e99);
+  color: #fffefe;
+  font-family: 'Orbitron', sans-serif;
+  padding: 1.5em 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+#trainer-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  margin-top: 1em;
+  font-weight: bold;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+}
+#trainer-stats p {
+  margin: 0;
+}
+
+
+/* Zone ajout Pokémon */
+#add-pokemon {
+  margin: 2em 0;
+}
+
+#add-pokemon input,
+#add-pokemon select,
+#capture-time {
+  padding: 0.5em;
+  margin-right: 0.5em;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: #eaeaea;
+  font-size: 0.9em;
+}
+
+/* Bouton "Ajouter" */
+#add-btn {
+  background: linear-gradient(90deg, #ad0202, #002e99);
+  color: #ffffff;
+  font-family: 'Orbitron', sans-serif;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+#add-btn:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5); 
+}
+
+/* Grille Pokédex */
+#pokedex {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1em;
+  padding: 2em;
+}
+
+/* Cartes Pokémon */
+.pokemon-card {
+  position: relative;
+  background: linear-gradient(180deg, #15191b, #0f1214);
+  color: #f2f2f2;
+  border-radius: 16px;
+  padding: 1em;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pokemon-card:hover {
+  transform: rotateX(5deg) rotateY(5deg) scale(1.03);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.6);
+}
+
+/* Sprite (image) */
+.pokemon-card img {
+  width: 100px;
+  z-index: 2;
+  position: relative;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.7));
+}
+
+/* Titres et texte */
+.pokemon-card h3 {
+  font-size: 1.1em;
+  margin: 0.5em 0 0.2em 0;
+  text-transform: capitalize;
+}
+
+.pokemon-card p {
+  margin: 0.2em 0;
+  color: rgba(230,230,230,0.9);
+  font-size: 0.92em;
+}
+
+.pokemon-card .capture-time {
+  color: rgba(200,200,200,0.6);
+  font-size: 0.85em;
+  margin-top: 0.35em;
+}
+
+/* Boutons sur cartes */
+.pokemon-card button {
+  background: linear-gradient(90deg, #39a24a, #68c27a);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.6em;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.pokemon-card button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Effet holographique */
+.pokemon-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.4), transparent 60%);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+}
+
+.pokemon-card:hover::after {
+  opacity: 1;
+}
+
+/* Animation “fade-in + slide-up” */
+.pokemon-card.new {
+  animation: slideFadeIn 0.5s ease forwards;
+}
+@keyframes slideFadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.pokemon-card.shiny-flash {
+  animation: shinyFlash 0.6s ease;
+}
+
+@keyframes shinyFlash {
+  0% { box-shadow: 0 0 20px 5px gold; }
+  50% { box-shadow: 0 0 40px 15px gold; }
+  100% { box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+}
+
+/* Rayon lumineux pour shiny */
+.pokemon-card.shiny-ray::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.3) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform: rotate(25deg);
+  animation: shinyRayMove 0.8s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes shinyRayMove {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(100%) rotate(25deg); }
+}
+
+#trainer-stats span.active-trainer {
+  color: #ffd700 !important;
+  text-shadow: 0 0 8px rgba(255,215,0,0.9);
+  transform: scale(1.05);
+  transition: all 0.18s ease;
+}
