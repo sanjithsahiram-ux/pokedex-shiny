@@ -84,45 +84,49 @@ let lastData = {};
 function renderPokedex(data) {
   pokedexDiv.innerHTML = "";
 
-  Object.entries(data)
-    Object.entries(data)
-  .sort(([a, A], [b, B]) => {
-    const indexA = pokemonByNumber.findIndex(p => p.toLowerCase() === a.toLowerCase());
-    const indexB = pokemonByNumber.findIndex(p => p.toLowerCase() === b.toLowerCase());
-    return indexA - indexB;
-  })
-    .forEach(([name, info]) => {
-      if (name === "init" || !info.img) return;
-      if (filteredTrainer && !info.caughtBy?.[filteredTrainer]) return;
+  // --- Ordre du nouveau Pokédex ---
+  const newDexOrder = [
+    "Chikorita","Bayleef","Meganium","Tepig","Pignite","Emboar","Totodile","Croconaw","Feraligatr","Fletchling","Fletchinder","Talonflame","Bunnelby","Diggersby","Scatterbug","Spewpa","Vivillon","Weedle","Kakuna","Beedrill","Pidgey","Pidgeotto","Pidgeot","Mareep","Flaaffy","Ampharos","Patrat","Watchog","Budew","Roselia","Roserade","Magikarp","Gyarados","Binacle","Barbaracle","Staryu","Starmie","Flabebe","Floette","Florges","Skiddo","Gogoat","Espurr","Meowstic","Litleo","Pyroar","Pancham","Pangoro","Trubbish","Garbodor","Dedenne","Pichu","Pikachu","Raichu","Cleffa","Clefairy","Clefable","Spinarak","Ariados","Ekans","Arbok","Abra","Kadabra","Alakazam","Gastly","Haunter","Gengar","Venipede","Whirlipede","Scolipede","Honedge","Doublade","Aegislash","Bellsprout","Weepinbell","Victreebel","Pansage","Simisage","Pansear","Simisear","Panpour","Simipour","Meditite","Medicham","Electrike","Manectric","Ralts","Kirlia","Gardevoir","Gallade","Houndour","Houndoom","Swablu","Altaria","Audino","Spritzee","Aromatisse","Swirlix","Slurpuff","Eevee","Vaporeon","Jolteon","Flareon","Espeon","Umbreon","Leafeon","Glaceon","Sylveon","Buneary","Lopunny","Shuppet","Banette","Vanillite","Vanillish","Vanilluxe","Numel","Camerupt","Hippopotas","Hippowdon","Drilbur","Excadrill","Sandile","Krokorok","Krookodile","Machop","Machoke","Machamp","Gible","Gabite","Garchomp","Carbink","Sableye","Mawile","Absol","Riolu","Lucario","Slowpoke","Slowbro","Slowking","Carvanha","Sharpedo","Tynamo","Eelektrik","Eelektross","Dratini","Dragonair","Dragonite","Bulbasaur","Ivysaur","Venusaur","Charmander","Charmeleon","Charizard","Squirtle","Wartortle","Blastoise","Stunfisk","Furfrou","Inkay","Malamar","Skrelp","Dragalge","Clauncher","Clawitzer","Goomy","Sliggoo","Goodra","Delibird","Snorunt","Glalie","Froslass","Snover","Abomasnow","Bergmite","Avalugg","Scyther","Scizor","Pinsir","Heracross","Emolga","Hawlucha","Phantump","Trevenant","Scraggy","Scrafty","Noibat","Noivern","Klefki","Litwick","Lampent","Chandelure","Aerodactyl","Tyrunt","Tyrantrum","Amaura","Aurorus","Onix","Steelix","Aron","Lairon","Aggron","Helioptile","Heliolisk","Pumpkaboo","Gourgeist","Larvitar","Pupitar","Tyranitar","Froakie","Frogadier","Greninja","Falinks","Chespin","Quilladin","Chesnaught","Skarmory","Fennekin","Braixen","Delphox","Bagon","Shelgon","Salamence","Kangaskhan","Drampa","Beldum","Metang","Metagross"
+  ];
 
-      const color = typeColors[(info.type || "").split(",")[0]] || "#888";
-      const card = document.createElement("div");
-      card.className = "pokemon-card new";
-      card.style.background = `linear-gradient(180deg, ${color}cc, #111)`;
-      card.style.border = `2px solid ${color}`;
+  // --- Conversion de data en tableau [clé, valeur] ---
+  const entries = Object.entries(data).filter(([name, info]) => name !== "init" && info.img);
 
-      if (Object.keys(info.caughtBy || {}).length > 0) {
-        card.classList.add("shiny-flash");
-        setTimeout(() => card.classList.remove("shiny-flash"), 600);
-        card.classList.add("shiny-ray");
-        setTimeout(() => card.classList.remove("shiny-ray"), 800);
-      }
+  // --- Tri dans l'ordre du nouveau Pokédex ---
+  entries.sort(([nameA], [nameB]) => {
+    const baseA = nameA.split(" ")[0].replace(/[^\w]/g, "").toLowerCase();
+    const baseB = nameB.split(" ")[0].replace(/[^\w]/g, "").toLowerCase();
+    const indexA = newDexOrder.findIndex(n => n.toLowerCase() === baseA);
+    const indexB = newDexOrder.findIndex(n => n.toLowerCase() === baseB);
+    return (indexA === -1 ? 9999 : indexA) - (indexB === -1 ? 9999 : indexB);
+  });
 
-      const trainers = Object.keys(info.caughtBy || {}).join(", ") || "?";
+  // --- Affichage ---
+  entries.forEach(([name, info]) => {
+    if (filteredTrainer && !info.caughtBy?.[filteredTrainer]) return;
 
-      card.innerHTML = `
-        <div class="shine"></div>
-        <img src="${info.img}" alt="${name}">
-        <h3>${name}</h3>
-        <p>Type : ${info.type || "?"}</p>
-        <p>Capturé par : ${trainers}</p>
-        ${info.firstCaptureTime ? `<p class="capture-time">⏰ ${info.firstCaptureTime}</p>` : ""}
-      `;
+    const color = typeColors[(info.type || "").split(",")[0]] || "#888";
+    const card = document.createElement("div");
+    card.className = "pokemon-card";
+    card.style.background = `linear-gradient(180deg, ${color}cc, #111)`;
+    card.style.border = `2px solid ${color}`;
 
-      pokedexDiv.appendChild(card);
-      setTimeout(() => card.classList.remove("new"), 600);
-    });
+    const trainers = Object.keys(info.caughtBy || {}).join(", ") || "?";
+
+    card.innerHTML = `
+      <div class="shine"></div>
+      <img src="${info.img}" alt="${name}">
+      <h3>${name}</h3>
+      <p>Type : ${info.type || "?"}</p>
+      <p>Capturé par : ${trainers}</p>
+      ${info.firstCaptureTime ? `<p class="capture-time">⏰ ${info.firstCaptureTime}</p>` : ""}
+    `;
+
+    pokedexDiv.appendChild(card);
+  });
 }
+
+
 
 // === Compteurs ===
 function updateTrainerStats(data) {
