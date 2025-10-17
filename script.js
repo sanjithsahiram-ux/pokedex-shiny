@@ -105,11 +105,35 @@ function updateTrainerStats(data) {
   natzorCount.textContent = natzorCaught.size;
 }
 
+function updateProgressBar(data) {
+  const totalShiny = 230; // objectif total
+  const uniqueCaught = new Set();
+
+  Object.values(data).forEach(pokemon => {
+    if (pokemon.caughtBy && Object.keys(pokemon.caughtBy).length > 0) {
+      uniqueCaught.add(pokemon.id);
+    }
+  });
+
+  const current = uniqueCaught.size;
+  const percent = Math.min((current / totalShiny) * 100, 100).toFixed(1);
+
+  const fill = document.getElementById("progress-fill");
+  const label = document.getElementById("progress-label");
+
+  if (fill && label) {
+    fill.style.width = `${percent}%`;
+    label.textContent = `Progression : ${current} / ${totalShiny} (${percent}%)`;
+  }
+}
+
+
 // === Listener Firestore ===
 onSnapshot(pokedexRef, snapshot => {
   const data = snapshot.exists() ? snapshot.data() : {};
   lastData = data;
   updateTrainerStats(data);
+  updateProgressBar(data); // ⬅️ AJOUT ICI
   renderPokedex(data);
   applyActiveTrainerClass();
 });
