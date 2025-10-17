@@ -106,7 +106,7 @@ function updateTrainerStats(data) {
 }
 
 function updateProgressBar(data) {
-  const totalShiny = 230; // objectif total
+  const totalShiny = 227; // objectif total
   const uniqueCaught = new Set();
 
   Object.values(data).forEach(pokemon => {
