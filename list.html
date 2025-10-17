@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des 227 Pokémon</title>
+  <link rel="icon" type="image/png" href="images/pokeball.png">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+      color: white;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.5em;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: 600;
+      color: #f5f5f5;
+      text-shadow: 0 0 8px rgba(255,255,255,0.2);
+      margin-bottom: 0.4em;
+    }
+
+    .subtitle {
+      font-size: 0.95em;
+      color: #aaa;
+      margin-bottom: 1.2em;
+    }
+
+    #search {
+      padding: 0.6em 1em;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      width: 200px;
+      text-align: center;
+      font-size: 1em;
+      margin-bottom: 1.5em;
+      background: #222;
+      color: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      transition: 0.3s;
+    }
+
+    #search:focus {
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
+    #pokemonGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1em;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .pokemon-card {
+      background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+      border-radius: 16px;
+      padding: 1em;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pokemon-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 15px rgba(255,255,255,0.25);
+    }
+
+    .pokemon-card img {
+      width: 80px;
+      height: 80px;
+      image-rendering: pixelated;
+    }
+
+    .pokemon-number {
+      color: #ccc;
+      font-size: 0.85em;
+      margin-bottom: 0.3em;
+    }
+
+    .btn-back {
+      margin-top: 2em;
+      background: #e3350d;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.7em 1.5em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(227, 53, 13, 0.3);
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-back:hover {
+      background: #ff5733;
+      box-shadow: 0 0 15px rgba(255, 87, 51, 0.6);
+    }
+
+    footer {
+      margin-top: 3em;
+      font-size: 0.85em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Liste des 227 Pokémon</h1>
+    <div class="subtitle">Recherchez un Pokémon par son numéro national</div>
+    <a href="index.html" class="btn-back">⬅ Retour au Pokédex</a>
+    <input type="number" id="search" placeholder="Numéro (1 - 227)" min="1" max="227">
+  </header>
+
+  <div id="pokemonGrid"></div>
+
+  
+
+  <footer>
+    <p>Liste Pokédex spéciale - Générations mélangées</p>
+  </footer>
+
+  <script src="list.js"></script>
+</body>
+</html>

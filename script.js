@@ -26,6 +26,42 @@ const typeColors = {
   fairy: "#EE99AC", normal: "#A8A878"
 };
 
+// === Pokémon par numéro du nouveau jeu ===
+const pokemonByNumber = [
+  "Chikorita","Bayleef","Meganium","Tepig","Pignite","Emboar",
+  "Totodile","Croconaw","Feraligatr","Fletchling","Fletchinder","Talonflame",
+  "Bunnelby","Diggersby","Scatterbug","Spewpa","Vivillon","Weedle","Kakuna",
+  "Beedrill","Pidgey","Pidgeotto","Pidgeot","Mareep","Flaaffy","Ampharos",
+  "Patrat","Watchog","Budew","Roselia","Roserade","Magikarp","Gyarados",
+  "Binacle","Barbaracle","Staryu","Starmie","Flabebe","Floette","Florges",
+  "Skiddo","Gogoat","Espurr","Meowstic","Litleo","Pyroar","Pancham","Pangoro",
+  "Trubbish","Garbodor","Dedenne","Pichu","Pikachu","Raichu","Cleffa","Clefairy",
+  "Clefable","Spinarak","Ariados","Ekans","Arbok","Abra","Kadabra","Alakazam",
+  "Gastly","Haunter","Gengar","Venipede","Whirlipede","Scolipede","Honedge",
+  "Doublade","Aegislash","Bellsprout","Weepinbell","Victreebel","Pansage",
+  "Simisage","Pansear","Simisear","Panpour","Simipour","Meditite","Medicham",
+  "Electrike","Manectric","Ralts","Kirlia","Gardevoir","Gallade","Houndour",
+  "Houndoom","Swablu","Altaria","Audino","Spritzee","Aromatisse","Swirlix",
+  "Slurpuff","Eevee","Vaporeon","Jolteon","Flareon","Espeon","Umbreon","Leafeon",
+  "Glaceon","Sylveon","Buneary","Lopunny","Shuppet","Banette","Vanillite",
+  "Vanillish","Vanilluxe","Numel","Camerupt","Hippopotas","Hippowdon","Drilbur",
+  "Excadrill","Sandile","Krokorok","Krookodile","Machop","Machoke","Machamp",
+  "Gible","Gabite","Garchomp","Carbink","Sableye","Mawile","Absol","Riolu",
+  "Lucario","Slowpoke","Slowbro","Slowking","Carvanha","Sharpedo","Tynamo",
+  "Eelektrik","Eelektross","Dratini","Dragonair","Dragonite","Bulbasaur","Ivysaur",
+  "Venusaur","Charmander","Charmeleon","Charizard","Squirtle","Wartortle","Blastoise",
+  "Stunfisk","Furfrou","Inkay","Malamar","Skrelp","Dragalge","Clauncher","Clawitzer",
+  "Goomy","Sliggoo","Goodra","Delibird","Snorunt","Glalie","Froslass","Snover",
+  "Abomasnow","Bergmite","Avalugg","Scyther","Scizor","Pinsir","Heracross","Emolga",
+  "Hawlucha","Phantump","Trevenant","Scraggy","Scrafty","Noibat","Noivern","Klefki",
+  "Litwick","Lampent","Chandelure","Aerodactyl","Tyrunt","Tyrantrum","Amaura",
+  "Aurorus","Onix","Steelix","Aron","Lairon","Aggron","Helioptile","Heliolisk",
+  "Pumpkaboo","Gourgeist","Larvitar","Pupitar","Tyranitar","Froakie","Frogadier",
+  "Greninja","Falinks","Chespin","Quilladin","Chesnaught","Skarmory","Fennekin",
+  "Braixen","Delphox","Bagon","Shelgon","Salamence","Kangaskhan","Drampa","Beldum",
+  "Metang","Metagross"
+];
+
 // === DOM ===
 const pokedexDiv = document.getElementById("pokedex");
 const addBtn = document.getElementById("add-btn");
@@ -40,19 +76,21 @@ const kirbCount = document.getElementById("kirb-count");
 const plosionCount = document.getElementById("plosion-count");
 const natzorCount = document.getElementById("natzor-count");
 
-// Audio shiny
 const shinySound = new Audio("sounds/shiny.mp3");
-
-// === State ===
 let filteredTrainer = null;
 let lastData = {};
 
-// === Affichage Pokédex ===
+// === Rendu Pokédex ===
 function renderPokedex(data) {
   pokedexDiv.innerHTML = "";
 
   Object.entries(data)
-    .sort(([a, A], [b, B]) => (A.id || 0) - (B.id || 0))
+    Object.entries(data)
+  .sort(([a, A], [b, B]) => {
+    const indexA = pokemonByNumber.findIndex(p => p.toLowerCase() === a.toLowerCase());
+    const indexB = pokemonByNumber.findIndex(p => p.toLowerCase() === b.toLowerCase());
+    return indexA - indexB;
+  })
     .forEach(([name, info]) => {
       if (name === "init" || !info.img) return;
       if (filteredTrainer && !info.caughtBy?.[filteredTrainer]) return;
@@ -86,7 +124,7 @@ function renderPokedex(data) {
     });
 }
 
-// === Mise à jour des compteurs ===
+// === Compteurs ===
 function updateTrainerStats(data) {
   const kirbCaught = new Set();
   const plosionCaught = new Set();
@@ -105,8 +143,9 @@ function updateTrainerStats(data) {
   natzorCount.textContent = natzorCaught.size;
 }
 
+// === Barre de progression ===
 function updateProgressBar(data) {
-  const totalShiny = 227; // objectif total
+  const totalShiny = 227;
   const uniqueCaught = new Set();
 
   Object.values(data).forEach(pokemon => {
@@ -127,28 +166,42 @@ function updateProgressBar(data) {
   }
 }
 
-
-// === Listener Firestore ===
+// === Firestore listener ===
 onSnapshot(pokedexRef, snapshot => {
   const data = snapshot.exists() ? snapshot.data() : {};
   lastData = data;
   updateTrainerStats(data);
-  updateProgressBar(data); // ⬅️ AJOUT ICI
+  updateProgressBar(data);
   renderPokedex(data);
   applyActiveTrainerClass();
 });
 
-// === Ajouter Pokémon (mâle/femelle) ===
+// === Ajouter Pokémon ===
 async function addShinyPokemon() {
-  const inputName = pokemonNameInput.value.trim().toLowerCase();
+  const input = pokemonNameInput.value.trim().toLowerCase();
   const trainerName = trainerNameInput.value.trim();
   const captureTime = captureTimeInput.value || new Date().toLocaleString();
 
-  if (!inputName) return alert("Veuillez entrer un nom ou ID du Pokémon.");
+  if (!input) return alert("Veuillez entrer un nom, ID ou numéro.");
   if (!trainerName) return alert("Veuillez sélectionner un dresseur.");
 
+  let pokemonName = "";
+
+  // Si c'est un numéro du nouveau jeu
+  if (/^\d+$/.test(input)) {
+    const num = parseInt(input, 10);
+    if (num >= 1 && num <= 227) {
+      pokemonName = pokemonByNumber[num - 1].toLowerCase();
+    } else {
+      alert("Numéro de Pokémon invalide !");
+      return;
+    }
+  } else {
+    pokemonName = input;
+  }
+
   try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${inputName}`);
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
     if (!res.ok) throw new Error("Pokémon introuvable !");
     const data = await res.json();
 
@@ -197,7 +250,7 @@ async function addShinyPokemon() {
   }
 }
 
-// === Popup choix mâle/femelle ===
+// === Popup mâle/femelle ===
 function chooseForm(forms) {
   return new Promise(resolve => {
     const overlay = document.createElement("div");
@@ -236,10 +289,10 @@ function chooseForm(forms) {
   });
 }
 
-// === Bouton ajouter ===
+// === Ajout bouton ===
 if (addBtn) addBtn.addEventListener("click", addShinyPokemon);
 
-// === Classe active sur nom filtré ===
+// === Filtrage par dresseur ===
 function applyActiveTrainerClass() {
   [kirbNameEl, plosionNameEl, natzorNameEl].forEach(el => el?.classList.remove("active-trainer"));
   if (!filteredTrainer) return;
@@ -247,7 +300,6 @@ function applyActiveTrainerClass() {
   map[filteredTrainer]?.classList.add("active-trainer");
 }
 
-// === Filtrage par dresseur ===
 [kirbNameEl, plosionNameEl, natzorNameEl].forEach(el => {
   if (!el) return;
   el.style.cursor = "pointer";
