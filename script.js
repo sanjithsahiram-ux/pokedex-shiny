@@ -72,9 +72,11 @@ const captureTimeInput = document.getElementById("capture-time");
 const kirbNameEl = document.getElementById("kirb-name");
 const plosionNameEl = document.getElementById("plosion-name");
 const natzorNameEl = document.getElementById("natzor-name");
+const curlyNameEl = document.getElementById("curly-name");
 const kirbCount = document.getElementById("kirb-count");
 const plosionCount = document.getElementById("plosion-count");
 const natzorCount = document.getElementById("natzor-count");
+const curlyCount = document.getElementById("curly-count");
 
 const shinySound = new Audio("sounds/shiny.mp3");
 let filteredTrainer = null;
@@ -133,18 +135,21 @@ function updateTrainerStats(data) {
   const kirbCaught = new Set();
   const plosionCaught = new Set();
   const natzorCaught = new Set();
+  const curlyCaught = new Set();
 
   Object.values(data).forEach(pokemon => {
     if (pokemon.caughtBy) {
       if (pokemon.caughtBy.Kirb) kirbCaught.add(pokemon.id);
       if (pokemon.caughtBy.Plosion) plosionCaught.add(pokemon.id);
       if (pokemon.caughtBy.Natzor) natzorCaught.add(pokemon.id);
+      if (pokemon.caughtBy.Curly) curlyCaught.add(pokemon.id);
     }
   });
 
   kirbCount.textContent = kirbCaught.size;
   plosionCount.textContent = plosionCaught.size;
   natzorCount.textContent = natzorCaught.size;
+  curlyCount.textContent = curlyCaught.size;
 }
 
 // === Barre de progression ===
@@ -298,17 +303,21 @@ if (addBtn) addBtn.addEventListener("click", addShinyPokemon);
 
 // === Filtrage par dresseur ===
 function applyActiveTrainerClass() {
-  [kirbNameEl, plosionNameEl, natzorNameEl].forEach(el => el?.classList.remove("active-trainer"));
+  [kirbNameEl, plosionNameEl, natzorNameEl, curlyNameEl].forEach(el => el?.classList.remove("active-trainer"));
   if (!filteredTrainer) return;
-  const map = { Kirb: kirbNameEl, Plosion: plosionNameEl, Natzor: natzorNameEl };
+  const map = { Kirb: kirbNameEl, Plosion: plosionNameEl, Natzor: natzorNameEl, Curly: curlyNameEl };
   map[filteredTrainer]?.classList.add("active-trainer");
 }
 
-[kirbNameEl, plosionNameEl, natzorNameEl].forEach(el => {
+[kirbNameEl, plosionNameEl, natzorNameEl, curlyNameEl].forEach(el => {
   if (!el) return;
   el.style.cursor = "pointer";
   el.addEventListener("click", () => {
-    const trainer = el.id === "kirb-name" ? "Kirb" : el.id === "plosion-name" ? "Plosion" : "Natzor";
+    const trainer =
+      el.id === "kirb-name" ? "Kirb" :
+      el.id === "plosion-name" ? "Plosion" :
+      el.id === "natzor-name" ? "Natzor" :
+      "Curly"; // 🆕 Ajout du 4e dresseur
     filteredTrainer = filteredTrainer === trainer ? null : trainer;
     renderPokedex(lastData);
     applyActiveTrainerClass();

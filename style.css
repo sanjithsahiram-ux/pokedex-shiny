@@ -379,6 +379,7 @@ header h1 {
 #trainer-stats span#kirb-name { color: #0055ff; cursor: pointer; }
 #trainer-stats span#plosion-name { color: #11cf00; cursor: pointer; }
 #trainer-stats span#natzor-name { color: #cd0000; cursor: pointer; }
+#trainer-stats span#curly-name { color: #ffdd00; cursor: pointer; }
 #trainer-stats span.active-trainer {
   color: #ffd700 !important;
   text-shadow: 0 0 8px rgba(255,215,0,0.9);
