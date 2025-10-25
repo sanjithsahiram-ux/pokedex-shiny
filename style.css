@@ -386,3 +386,115 @@ header h1 {
   transform: scale(1.05);
   transition: all 0.18s ease;
 }
+
+/* --- NOUVEAUX STYLES POUR LA FONCTIONNALITÉ DE SUPPRESSION --- */
+
+/* Style pour le bouton de suppression sur chaque carte Pokémon */
+.pokemon-card .delete-btn {
+  position: absolute;
+  top: 10px; /* Ajuste la position verticale */
+  right: 10px; /* Ajuste la position horizontale */
+  background: rgba(255, 0, 0, 0.7); /* Rouge semi-transparent */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Bouton rond */
+  width: 25px;
+  height: 25px;
+  font-size: 0.9em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10; /* Pour qu'il soit au-dessus de tout */
+  transition: background 0.2s ease, transform 0.2s ease;
+  line-height: 1; /* Pour mieux centrer le "X" */
+}
+
+.pokemon-card .delete-btn:hover {
+  background: rgba(255, 0, 0, 1); /* Rouge plus intense au survol */
+  transform: scale(1.1); /* Léger agrandissement */
+}
+
+/* Styles pour l'overlay de la popup de suppression des dresseurs */
+.delete-trainer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Assure que l'overlay est au-dessus de tout */
+  backdrop-filter: blur(3px); /* Ajoute un léger flou à l'arrière-plan */
+  animation: fadeInBg 0.3s ease forwards; /* Réutilise l'animation si tu l'as */
+}
+
+/* Styles pour la popup de suppression elle-même */
+.delete-trainer-popup {
+  background: radial-gradient(circle at top, #2a2a2a 0%, #1a1a1a 100%); /* Fond dégradé plus doux */
+  padding: 1.8em;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.15); /* Ombre plus douce */
+  text-align: center;
+  color: white;
+  max-width: 350px; /* Largeur maximale de la popup */
+  width: 90%; /* S'adapte à la taille de l'écran */
+  transform: scale(0.8);
+  opacity: 0;
+  animation: popIn 0.35s ease forwards; /* Réutilise l'animation si tu l'as */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Petite bordure subtile */
+}
+
+.delete-trainer-popup h4 {
+  margin-top: 0;
+  margin-bottom: 1.2em;
+  font-size: 1.3em;
+  color: #f0f0f0; /* Couleur du titre */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+.delete-trainer-popup button {
+  display: block; /* Chaque bouton sur sa propre ligne */
+  width: 90%; /* Largeur des boutons */
+  margin: 0.6em auto; /* Centrer et espacer */
+  padding: 0.9em;
+  border: none;
+  border-radius: 12px; /* Bords plus arrondis */
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background 0.25s ease, transform 0.1s ease;
+  letter-spacing: 0.5px;
+}
+
+.delete-trainer-popup .trainer-button {
+  background: linear-gradient(90deg, #ad0202, #002e99); /* Tes couleurs de header */
+  color: white;
+}
+
+.delete-trainer-popup .trainer-button:hover {
+  background: linear-gradient(90deg, #e3350d, #0056e6); /* Variations au survol */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.delete-trainer-popup .cancel-button {
+  background: #333; /* Gris plus foncé */
+  color: #e0e0e0;
+  margin-top: 1.8em; /* Plus d'espace pour le bouton annuler */
+}
+
+.delete-trainer-popup .cancel-button:hover {
+  background: #555;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* S'assurer que les animations fadeInBg et popIn sont définies
+   Si tu ne les as pas déjà, ajoute-les aussi.
+   Je les ai vues dans ton code CSS pour #form-selector, donc elles sont sûrement déjà là. */
+/* @keyframes fadeInBg { ... } */
+/* @keyframes popIn { ... } */
