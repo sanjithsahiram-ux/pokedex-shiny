@@ -85,33 +85,47 @@ const shinySound = new Audio("sounds/shiny.mp3");
 let filteredTrainer = null;
 let lastData = {}; // Stocke les dernières données du Pokédex pour le rendu et la suppression
 
+// Options de formatage de date pour toLocaleString
+const dateFormatOptions = {
+  year: 'numeric', month: 'numeric', day: 'numeric',
+  hour: '2-digit', minute: '2-digit', second: '2-digit'
+};
+
+// Fonction utilitaire pour formater une date
+function formatCaptureTime(dateString) {
+  try {
+    const date = new Date(dateString);
+    // Vérifie si la date est valide
+    if (isNaN(date.getTime())) {
+      console.warn("Date invalide rencontrée:", dateString);
+      return dateString; // Retourne la chaîne originale si elle n'est pas une date valide
+    }
+    return date.toLocaleString("fr-FR", dateFormatOptions);
+  } catch (e) {
+    console.error("Erreur de formatage de date:", e, dateString);
+    return dateString; // En cas d'erreur inattendue
+  }
+}
+
 // === Rendu Pokédex ===
 function renderPokedex(data) {
   pokedexDiv.innerHTML = "";
 
-  // --- Ordre du nouveau Pokédex ---
-  // Utilise directement pokemonByNumber comme ordre pour éviter la duplication
   const newDexOrder = pokemonByNumber.map(name => name.toLowerCase());
 
-  // --- Conversion de data en tableau [clé, valeur] ---
   const entries = Object.entries(data).filter(([name, info]) => name !== "init" && info.img);
 
-  // --- Tri dans l'ordre du nouveau Pokédex ---
   entries.sort(([nameA], [nameB]) => {
-    // Normalise les noms pour la comparaison (ex: "bulbizarre (♂)" -> "bulbizarre")
     const cleanNameA = nameA.split(" ")[0].replace(/[^\w]/g, "").toLowerCase();
     const cleanNameB = nameB.split(" ")[0].replace(/[^\w]/g, "").toLowerCase();
 
     const indexA = newDexOrder.indexOf(cleanNameA);
     const indexB = newDexOrder.indexOf(cleanNameB);
 
-    // Les Pokémon non trouvés dans newDexOrder sont mis à la fin
     return (indexA === -1 ? 9999 : indexA) - (indexB === -1 ? 9999 : indexB);
   });
 
-  // --- Affichage ---
   entries.forEach(([name, info]) => {
-    // Filtrage par dresseur actif
     if (filteredTrainer && !info.caughtBy?.[filteredTrainer]) {
       return;
     }
@@ -124,22 +138,24 @@ function renderPokedex(data) {
 
     const trainers = Object.keys(info.caughtBy || {}).join(", ") || "?";
 
+    // Formater la date juste avant l'affichage
+    const displayedCaptureTime = info.firstCaptureTime ? formatCaptureTime(info.firstCaptureTime) : "";
+
     card.innerHTML = `
       <div class="shine"></div>
       <img src="${info.img}" alt="${name}">
       <h3>${name}</h3>
       <p>Type : ${info.type || "?"}</p>
       <p>Capturé par : ${trainers}</p>
-      ${info.firstCaptureTime ? `<p class="capture-time">⏰ ${info.firstCaptureTime}</p>` : ""}
+      ${info.firstCaptureTime ? `<p class="capture-time">⏰ ${displayedCaptureTime}</p>` : ""}
       <button class="delete-btn" data-pokemon-name="${name}">X</button>
     `;
     pokedexDiv.appendChild(card);
   });
 
-  // Attacher les écouteurs d'événements aux boutons de suppression APRES le rendu
   document.querySelectorAll(".delete-btn").forEach(button => {
     button.addEventListener("click", async (event) => {
-      event.stopPropagation(); // Empêche le clic de la carte de se déclencher
+      event.stopPropagation();
       const pokemonName = event.target.dataset.pokemonName;
       await showDeleteTrainerPopup(pokemonName);
     });
@@ -169,24 +185,20 @@ function updateTrainerStats(data) {
 }
 
 // === Barre de progression ===
-// === Barre de progression ===
 function updateProgressBar(data) {
-  const totalShiny = pokemonByNumber.length; // Utilise la taille de ton tableau de référence (227)
-  const uniqueCaughtIds = new Set(); // On va stocker les IDs des Pokémon uniques capturés
+  const totalShiny = pokemonByNumber.length;
+  const uniqueCaughtIds = new Set();
 
   Object.values(data).forEach(pokemon => {
-    // Un Pokémon est considéré comme capturé s'il a au moins un dresseur
     if (pokemon.caughtBy && Object.keys(pokemon.caughtBy).length > 0) {
-      if (pokemon.id) { // Assure-toi que l'ID existe
+      if (pokemon.id) {
         uniqueCaughtIds.add(pokemon.id);
       } else {
-        // Fallback si un ancien Pokémon n'a pas d'ID, essaie de le déduire du nom (moins fiable)
         const pokemonNameKey = Object.keys(data).find(key => data[key] === pokemon);
         if (pokemonNameKey) {
             const cleanName = pokemonNameKey.split(" ")[0].replace(/[^\w]/g, "").toLowerCase();
             const indexInByNumber = pokemonByNumber.findIndex(n => n.toLowerCase() === cleanName);
             if (indexInByNumber !== -1) {
-                // Si on le trouve par son nom dans la liste de référence, on peut utiliser son index + 1 comme "ID" temporaire
                 uniqueCaughtIds.add(indexInByNumber + 1);
             }
         }
@@ -194,7 +206,7 @@ function updateProgressBar(data) {
     }
   });
 
-  const current = uniqueCaughtIds.size; // Nombre d'IDs uniques capturés
+  const current = uniqueCaughtIds.size;
   const percent = Math.min((current / totalShiny) * 100, 100).toFixed(1);
 
   const fill = document.getElementById("progress-fill");
@@ -209,31 +221,37 @@ function updateProgressBar(data) {
 // === Firestore listener ===
 onSnapshot(pokedexRef, snapshot => {
   const data = snapshot.exists() ? snapshot.data() : {};
-  lastData = data; // Met à jour lastData avec les dernières données
+  lastData = data;
   updateTrainerStats(data);
   updateProgressBar(data);
   renderPokedex(data);
   applyActiveTrainerClass();
 }, (error) => {
   console.error("Erreur de lecture Firestore:", error);
-  // Gérer l'erreur, par exemple afficher un message à l'utilisateur
 });
 
 // === Ajouter Pokémon ===
 async function addShinyPokemon() {
   const input = pokemonNameInput.value.trim().toLowerCase();
   const trainerName = trainerNameInput.value.trim();
-  const captureTime = captureTimeInput.value || new Date().toLocaleString("fr-FR", {
-    year: 'numeric', month: 'numeric', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  }); // Format français
+  let rawCaptureTime = captureTimeInput.value; // La valeur brute de l'input datetime-local
+
+  let formattedCaptureTime;
+
+  if (rawCaptureTime) {
+    // Si l'utilisateur a rempli le champ, on le formate
+    formattedCaptureTime = formatCaptureTime(rawCaptureTime);
+  } else {
+    // Sinon, on génère la date actuelle et on la formate
+    formattedCaptureTime = formatCaptureTime(new Date().toISOString());
+  }
+
 
   if (!input) return alert("Veuillez entrer un nom, ID ou numéro.");
   if (!trainerName) return alert("Veuillez sélectionner un dresseur.");
 
-  let pokemonNameToFetch = ""; // Nom utilisé pour la requête à PokeAPI
+  let pokemonNameToFetch = "";
 
-  // Si c'est un numéro du nouveau jeu
   if (/^\d+$/.test(input)) {
     const num = parseInt(input, 10);
     if (num >= 1 && num <= pokemonByNumber.length) {
@@ -256,7 +274,7 @@ async function addShinyPokemon() {
     }
     const data = await res.json();
 
-    const name = data.name; // Nom de base du Pokémon selon l'API
+    const name = data.name;
     const types = data.types.map(t => t.type.name).join(", ");
 
     const forms = [];
@@ -264,32 +282,29 @@ async function addShinyPokemon() {
     if (data.sprites.front_shiny_female) forms.push({ label: `${name} (♀)`, img: data.sprites.front_shiny_female });
 
     let selectedForm = forms.length > 1 ? await chooseForm(forms) : (forms[0] || { label: name, img: data.sprites.front_shiny || data.sprites.front_default });
-    if (!selectedForm) return; // Si l'utilisateur annule la sélection de forme
+    if (!selectedForm) return;
 
     const shinyImg = selectedForm.img;
-    const formLabel = selectedForm.label; // Ex: "bulbizarre (♂)"
+    const formLabel = selectedForm.label;
 
     const snapshot = await getDoc(pokedexRef);
     const currentData = snapshot.exists() ? snapshot.data() : {};
 
     if (currentData[formLabel]) {
-      // Le Pokémon (sous cette forme) existe déjà dans le Pokédex
       if (currentData[formLabel].caughtBy?.[trainerName]) {
         alert(`${trainerName} a déjà attrapé ${formLabel} !`);
         return;
       }
-      // Ajoute le dresseur au Pokémon existant
-      currentData[formLabel].caughtBy[trainerName] = { time: captureTime };
+      currentData[formLabel].caughtBy[trainerName] = { time: formattedCaptureTime }; // Utilise la date formatée
     } else {
-      // Nouveau Pokémon (sous cette forme) à ajouter
       currentData[formLabel] = {
-        id: data.id, // L'ID numérique de l'API
-        name: data.name, // Le nom de base (ex: "bulbasaur")
+        id: data.id,
+        name: data.name,
         img: shinyImg,
         type: types,
-        firstCaptureTime: captureTime, // Première capture enregistrée pour cette forme
+        firstCaptureTime: formattedCaptureTime, // Utilise la date formatée
         caughtBy: {
-          [trainerName]: { time: captureTime } // Le dresseur actuel
+          [trainerName]: { time: formattedCaptureTime } // Utilise la date formatée
         }
       };
     }
@@ -310,9 +325,6 @@ async function addShinyPokemon() {
 // === Popup mâle/femelle ===
 function chooseForm(forms) {
   return new Promise(resolve => {
-    // Utilise les éléments existants dans le HTML si tu en as (form-selector, form-selector-content, etc.)
-    // Sinon, crée-les dynamiquement comme avant.
-    // Pour cet exemple, je suppose que tu as la structure HTML définie pour #form-selector.
     const formSelector = document.getElementById("form-selector");
     const formOptionsDiv = document.getElementById("form-options");
     const formSelectorTitle = document.querySelector("#form-selector-content h3");
@@ -320,16 +332,14 @@ function chooseForm(forms) {
 
     if (!formSelector || !formOptionsDiv || !formSelectorTitle || !cancelFormButton) {
       console.error("Éléments HTML pour le sélecteur de forme introuvables. Création dynamique.");
-      // Fallback à la création dynamique si les éléments HTML ne sont pas là
-      // C'est le même code que j'ai donné précédemment pour chooseForm si tu n'as pas le HTML.
-      // Je laisse cette partie de côté pour ne pas alourdir, si tu as le HTML, c'est mieux.
-      // Pour l'instant, si les éléments ne sont pas là, on choisit la première forme
+      // Fallback si les éléments ne sont pas trouvés (code de création dynamique si tu veux le remettre)
+      // Pour l'instant, je résous avec la première forme pour éviter un blocage
       resolve(forms[0]);
       return;
     }
 
-    formOptionsDiv.innerHTML = ""; // Vide les options précédentes
-    formSelectorTitle.textContent = `Choisir une forme pour votre Pokémon :`; // Met à jour le titre
+    formOptionsDiv.innerHTML = "";
+    formSelectorTitle.textContent = `Choisir une forme pour votre Pokémon :`;
 
     forms.forEach(form => {
       const optionDiv = document.createElement("div");
@@ -339,33 +349,29 @@ function chooseForm(forms) {
         <p class="form-name">${form.label}</p>
       `;
       optionDiv.addEventListener("click", () => {
-        formSelector.classList.add("hidden"); // Cache l'overlay
+        formSelector.classList.add("hidden");
         resolve(form);
       });
       formOptionsDiv.appendChild(optionDiv);
     });
 
     cancelFormButton.onclick = () => {
-      formSelector.classList.add("hidden"); // Cache l'overlay
+      formSelector.classList.add("hidden");
       resolve(null);
     };
 
-    formSelector.classList.remove("hidden"); // Affiche l'overlay
+    formSelector.classList.remove("hidden");
 
-    // Pour l'animation de popIn, on peut relancer l'animation
     const formSelectorContent = document.getElementById("form-selector-content");
     if (formSelectorContent) {
-        formSelectorContent.style.animation = 'none'; // Reset animation
-        void formSelectorContent.offsetWidth; // Trigger reflow
-        formSelectorContent.style.animation = ''; // Re-apply animation
+        formSelectorContent.style.animation = 'none';
+        void formSelectorContent.offsetWidth;
+        formSelectorContent.style.animation = '';
     }
   });
 }
 
-
 // === GESTION DE LA SUPPRESSION ===
-
-// Fonction pour supprimer un dresseur d'un Pokémon ou le Pokémon entier
 async function removeTrainerOrPokemon(pokemonName, trainerToRemove) {
   const snapshot = await getDoc(pokedexRef);
   let currentData = snapshot.exists() ? snapshot.data() : {};
@@ -375,36 +381,27 @@ async function removeTrainerOrPokemon(pokemonName, trainerToRemove) {
     return;
   }
 
-  // Si un dresseur est spécifié, on le supprime de la liste caughtBy
   if (trainerToRemove && currentData[pokemonName].caughtBy?.[trainerToRemove]) {
-    // Utilise deleteField de Firebase pour une suppression propre d'un champ
-    // Cependant, pour des sous-objets, il faut récupérer l'objet, le modifier, puis le re-sauvegarder
-    const updatedCaughtBy = { ...currentData[pokemonName].caughtBy }; // Copie l'objet
-    delete updatedCaughtBy[trainerToRemove]; // Supprime le dresseur
+    const updatedCaughtBy = { ...currentData[pokemonName].caughtBy };
+    delete updatedCaughtBy[trainerToRemove];
 
-    // Si après suppression, il n'y a plus aucun dresseur pour ce Pokémon, supprime toute la carte
     if (Object.keys(updatedCaughtBy).length === 0) {
-      delete currentData[pokemonName]; // Supprime le Pokémon entier
+      delete currentData[pokemonName];
       alert(`${pokemonName} a été supprimé du Pokédex.`);
     } else {
-      // Met à jour l'objet caughtBy pour ce Pokémon
       currentData[pokemonName].caughtBy = updatedCaughtBy;
       alert(`${trainerToRemove} a été retiré de ${pokemonName}.`);
     }
   } else {
-    // Cas d'erreur ou si le dresseur n'était pas trouvé pour une raison quelconque
     alert(`Le dresseur ${trainerToRemove} n'a pas capturé ${pokemonName} ou le Pokémon a déjà été retiré.`);
     return;
   }
 
-  await setDoc(pokedexRef, currentData); // Sauvegarde les modifications dans Firebase
+  await setDoc(pokedexRef, currentData);
 }
 
-
-// Fonction pour afficher la popup de sélection du dresseur à supprimer
 function showDeleteTrainerPopup(pokemonName) {
   return new Promise(resolve => {
-    // lastData contient déjà toutes les informations du Pokédex
     const pokemonInfo = lastData[pokemonName];
 
     if (!pokemonInfo || !pokemonInfo.caughtBy || Object.keys(pokemonInfo.caughtBy).length === 0) {
