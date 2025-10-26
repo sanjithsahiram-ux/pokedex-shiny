@@ -57,7 +57,7 @@ const pokemonByNumber = [
   "Hawlucha", "Phantump", "Trevenant", "Scraggy", "Scrafty", "Noibat", "Noivern", "Klefki",
   "Litwick", "Lampent", "Chandelure", "Aerodactyl", "Tyrunt", "Tyrantrum", "Amaura",
   "Aurorus", "Onix", "Steelix", "Aron", "Lairon", "Aggron", "Helioptile", "Heliolisk",
-  "Pumpkaboo-average", "Gourgeist", "Larvitar", "Pupitar", "Tyranitar", "Froakie", "Frogadier",
+  "Pumpkaboo-average", "Gourgeist-average", "Larvitar", "Pupitar", "Tyranitar", "Froakie", "Frogadier",
   "Greninja", "Falinks", "Chespin", "Quilladin", "Chesnaught", "Skarmory", "Fennekin",
   "Braixen", "Delphox", "Bagon", "Shelgon", "Salamence", "Kangaskhan", "Drampa", "Beldum",
   "Metang", "Metagross"
