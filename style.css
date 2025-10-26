@@ -6,23 +6,26 @@ body {
   text-align: center;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Empêche le défilement horizontal indésirable */
 }
 
 /* Header */
 header {
-  display: flex;
-  align-items: center;
+  display: flex; /* Active Flexbox */
+  align-items: center; /* Centre verticalement les éléments */
+  justify-content: space-between; /* Écarte les éléments aux extrémités */
   background: linear-gradient(90deg, #ad0202, #002e99);
   color: #fffefe;
   font-family: 'Orbitron', sans-serif;
   padding: 1.5em 2em;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  position: relative;
+  position: relative; /* Garde ceci si tu as d'autres éléments positionnés dans le header */
+  z-index: 100; /* Assure que le header est au-dessus du reste */
 }
 
-/* Bouton à gauche */
+/* Style des liens dans le header (boutons) */
 header a {
-  background: #e3350d;
+  background: #0000005e;
   color: white;
   border-radius: 12px;
   padding: 0.6em 1.2em;
@@ -31,27 +34,26 @@ header a {
   cursor: pointer;
   box-shadow: 0 0 10px rgba(227, 53, 13, 0.3);
   transition: all 0.3s ease;
-  z-index: 2;
+  z-index: 2; /* Pour que les boutons soient au-dessus du h1 si nécessaire */
+  white-space: nowrap; /* Empêche le texte du bouton de se couper */
 }
 
 header a:hover {
-  background: #ff5733;
+  background: #73000080;
   box-shadow: 0 0 15px rgba(255, 87, 51, 0.6);
 }
 
 /* Titre centré */
 header h1 {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
+  flex-grow: 1; /* Permet au titre de prendre tout l'espace restant */
+  text-align: center; /* Centre le texte dans l'espace alloué au h1 */
+  margin: 0; /* Réinitialise les marges par défaut */
   font-family: 'Orbitron', sans-serif;
   color: white;
-  text-align: center;
 }
 
 
-/* Trainer stats */
+/* --- Trainer stats --- */
 #trainer-stats {
   display: flex;
   justify-content: center;
@@ -61,9 +63,15 @@ header h1 {
   color: #fff;
   font-family: 'Orbitron', sans-serif;
 }
+
 #trainer-stats p {
   margin: 0;
 }
+
+#trainer-stats span#kirb-name { color: #0055ff; cursor: pointer; }
+#trainer-stats span#plosion-name { color: #11cf00; cursor: pointer; }
+#trainer-stats span#natzor-name { color: #cd0000; cursor: pointer; }
+#trainer-stats span#curly-name { color: #ffdd00; cursor: pointer; }
 #trainer-stats span.active-trainer {
   color: #ffd700 !important;
   text-shadow: 0 0 8px rgba(255,215,0,0.9);
@@ -71,7 +79,7 @@ header h1 {
   transition: all 0.18s ease;
 }
 
-/* Zone ajout Pokémon */
+/* --- Zone ajout Pokémon --- */
 #add-pokemon {
   margin: 2em 0;
 }
@@ -86,6 +94,7 @@ header h1 {
   background: rgba(255,255,255,0.03);
   color: #eaeaea;
   font-size: 0.9em;
+  box-sizing: border-box; /* Pour que padding et border soient inclus dans la largeur */
 }
 
 /* Bouton "Ajouter" */
@@ -101,12 +110,12 @@ header h1 {
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }
-#add-btn:hover { 
-  transform: translateY(-2px); 
-  box-shadow: 0 6px 18px rgba(0,0,0,0.5); 
+#add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
 }
 
-/* Grille Pokédex */
+/* --- Grille Pokédex --- */
 #pokedex {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -158,7 +167,7 @@ header h1 {
   margin-top: 0.35em;
 }
 
-/* Boutons sur cartes */
+/* Boutons sur cartes (note: le .delete-btn a des styles spécifiques plus bas) */
 .pokemon-card button {
   background: linear-gradient(90deg, #39a24a, #68c27a);
   color: white;
@@ -238,7 +247,7 @@ header h1 {
   100% { transform: translateX(100%) rotate(25deg); }
 }
 
-/* Overlay sélection forme */
+/* --- Overlay sélection forme --- */
 #form-selector {
   position: fixed;
   inset: 0;
@@ -337,7 +346,7 @@ header h1 {
   100% { transform: scale(1); opacity: 1; box-shadow: 0 0 15px rgba(255,255,255,0.15); }
 }
 
-/* === Barre de progression === */
+/* --- Barre de progression --- */
 #progress-container {
   margin: 1.5em auto;
   width: 80%;
@@ -364,27 +373,6 @@ header h1 {
   height: 100%;
   background: linear-gradient(90deg, #00ff88, #0077ff);
   transition: width 0.5s ease-in-out;
-}
-
-/* === Pseudos des dresseurs === */
-#trainer-stats {
-  display: flex;
-  justify-content: center;
-  gap: 2em;
-  margin-bottom: 1.5em;
-  font-weight: bold;
-  font-family: 'Orbitron', sans-serif;
-}
-
-#trainer-stats span#kirb-name { color: #0055ff; cursor: pointer; }
-#trainer-stats span#plosion-name { color: #11cf00; cursor: pointer; }
-#trainer-stats span#natzor-name { color: #cd0000; cursor: pointer; }
-#trainer-stats span#curly-name { color: #ffdd00; cursor: pointer; }
-#trainer-stats span.active-trainer {
-  color: #ffd700 !important;
-  text-shadow: 0 0 8px rgba(255,215,0,0.9);
-  transform: scale(1.05);
-  transition: all 0.18s ease;
 }
 
 /* --- NOUVEAUX STYLES POUR LA FONCTIONNALITÉ DE SUPPRESSION --- */
@@ -493,8 +481,80 @@ header h1 {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* S'assurer que les animations fadeInBg et popIn sont définies
-   Si tu ne les as pas déjà, ajoute-les aussi.
-   Je les ai vues dans ton code CSS pour #form-selector, donc elles sont sûrement déjà là. */
-/* @keyframes fadeInBg { ... } */
-/* @keyframes popIn { ... } */
+/* --- Barre de progression --- */
+#progress-container {
+  margin: 1.5em auto;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+
+#progress-label {
+  margin-bottom: 0.3em;
+  color: white;
+}
+
+#progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+#progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #0077ff);
+  transition: width 0.5s ease-in-out;
+}
+
+/* --- Responsive adjustments for header and general layout --- */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column; /* Empile les éléments du header sur les petits écrans */
+    padding: 1em; /* Moins de padding */
+  }
+  header h1 {
+    margin: 0.5em 0; /* Ajoute un peu de marge verticale autour du titre */
+    max-width: 100%; /* Permet au titre de prendre toute la largeur disponible */
+  }
+  header a {
+    margin: 0.3em 0; /* Espacement vertical entre les boutons et/ou le titre */
+    width: 80%; /* Rend les boutons plus larges */
+    box-sizing: border-box; /* Inclure padding/border dans la largeur */
+  }
+
+  #add-pokemon input,
+  #add-pokemon select,
+  #capture-time,
+  #add-btn {
+    width: calc(100% - 1em); /* Prend presque toute la largeur disponible */
+    margin-right: 0; /* Supprime la marge à droite */
+    margin-bottom: 0.5em; /* Ajoute une marge en bas */
+  }
+  #add-pokemon button {
+    margin-top: 0.5em; /* Ajoute un peu de marge au bouton ajouter */
+  }
+
+  #trainer-stats {
+    flex-direction: column; /* Empile les stats des dresseurs */
+    gap: 0.5em; /* Moins d'espace */
+  }
+
+  #pokedex {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Cartes un peu plus petites */
+    padding: 1em; /* Moins de padding */
+  }
+}
+
+@media (max-width: 480px) {
+  #add-pokemon input,
+  #add-pokemon select,
+  #capture-time,
+  #add-btn {
+    font-size: 0.8em; /* Taille de police plus petite */
+    padding: 0.4em;
+  }
+}

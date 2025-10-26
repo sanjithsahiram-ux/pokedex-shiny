@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zones Pokémon Rares</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Styles spécifiques pour map.html */
+
+    body {
+      background: radial-gradient(circle at top, #0f1113, #0b0b0b);
+      color: #e6e6e6;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5em 2em;
+      position: relative;
+    }
+
+    header h1 {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        font-family: 'Orbitron', sans-serif;
+        color: white;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0 1em;
+        box-sizing: border-box;
+        max-width: 60%;
+    }
+
+    header .back-button {
+        background: #e3350d;
+        color: white;
+        border-radius: 12px;
+        padding: 0.6em 1.2em;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(227, 53, 13, 0.3);
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+
+    header .back-button:hover {
+        background: #ff5733;
+        box-shadow: 0 0 15px rgba(255, 87, 51, 0.6);
+    }
+
+    main {
+      padding: 3em 1em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 100px);
+      background: #0d0e0f;
+    }
+
+    /* Retirez les styles .map-controls et les boutons car ils ne seront plus là */
+    /* .map-controls { ... } */
+    /* .map-controls button { ... } */
+
+    .map-container {
+      width: 90%;
+      max-width: 1200px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden; /* TRÈS IMPORTANT : Cache ce qui dépasse du conteneur */
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      cursor: grab; /* Indique que l'élément peut être déplacé */
+      position: relative; /* Nécessaire pour le pan/drag de l'image */
+    }
+
+    .map-container.dragging {
+        cursor: grabbing; /* Curseur quand on déplace */
+    }
+
+    .map-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      /* Ajoutez cette transition pour un zoom fluide */
+      transition: transform 0.1s ease-out; /* Transition plus rapide pour le zoom molette */
+
+      /* Les transformations (translate et scale) seront appliquées directement ici par JS */
+      transform-origin: 0 0; /* Par défaut, l'origine de transformation est le coin supérieur gauche */
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .map-container {
+        width: 95%;
+        aspect-ratio: 4 / 3;
+      }
+      header {
+          flex-direction: column;
+          padding: 1em;
+      }
+      header h1 {
+          position: static;
+          transform: none;
+          margin: 0.5em 0;
+          max-width: 100%;
+      }
+      header .back-button {
+          margin: 0.3em 0;
+          width: 80%;
+          box-sizing: border-box;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .map-container {
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+      }
+      main {
+          padding: 1em 0;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-button">⬅ Retour Pokédex</a>
+  <h1>Carte des Zones Rares</h1>
+  <a href="list.html" class="back-button">Liste Complète</a>
+</header>
+
+<main>
+  <!-- Retirez la div map-controls et ses boutons -->
+  <!-- <div class="map-controls"> ... </div> -->
+  <div class="map-container" id="map-container">
+    <img src="CarteZA.png" alt="Carte des zones rares" class="map-img" id="carte-za">
+  </div>
+</main>
+
+<script src="map.js"></script>
+</body>
+</html>
